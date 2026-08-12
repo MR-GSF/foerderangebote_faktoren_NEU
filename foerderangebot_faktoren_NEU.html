@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Förderangebot – Einflussfaktoren</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --dark:      #4a4a4a;
+  --dark2:     #2e2e2e;
+  --mg:        #C8006E;
+  --mg2:       #a8005c;
+  --mg3:       #fce8f3;
+  --white:     #ffffff;
+  --chip-bg:   rgba(255,255,255,0.95);
+  --chip-txt:  #2e2e2e;
+  --chip-sub:  #666666;
+  --chip-shadow: 0 3px 16px rgba(0,0,0,0.16);
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-family: 'Open Sans', sans-serif;
+  background: var(--mg);
+}
+
+/* ── SLIDE ───────────────────────────────────── */
+.slide {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+}
+
+/* Right: magenta background */
+.right-panel {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, var(--mg) 0%, var(--mg2) 100%);
+  z-index: 0;
+}
+.right-panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,.07) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Left: grey panel */
+.left-panel {
+  position: relative;
+  z-index: 2;
+  width: clamp(200px, 38%, 380px);
+  min-height: 100vh;
+  background: linear-gradient(160deg, var(--dark2) 0%, var(--dark) 100%);
+  clip-path: ellipse(105% 100% at 0% 50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(20px, 4vw, 48px) clamp(28px, 6vw, 64px) clamp(20px, 4vw, 48px) clamp(20px, 4vw, 44px);
+  flex-shrink: 0;
+}
+
+/* ── HEADLINE ────────────────────────────────── */
+.left-headline {
+  font-size: clamp(.55rem, 1.2vw, .65rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  color: rgba(255,255,255,.35);
+  margin-bottom: clamp(12px, 2.5vh, 22px);
+}
+
+/* ── CATEGORY BUTTONS ────────────────────────── */
+.cat-btn {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1.5vw, 14px);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: clamp(10px, 2vh, 18px) 0;
+  text-align: left;
+  outline: none;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  transition: opacity .2s;
+  width: 100%;
+}
+.cat-btn:last-child { border-bottom: none; }
+.cat-btn:hover { opacity: .8; }
+
+.cat-indicator {
+  width: 4px;
+  height: clamp(26px, 4vh, 36px);
+  border-radius: 3px;
+  background: rgba(255,255,255,.15);
+  flex-shrink: 0;
+  transition: background .25s, height .25s, box-shadow .25s;
+}
+.cat-btn.active .cat-indicator {
+  background: var(--mg);
+  height: clamp(32px, 5vh, 46px);
+  box-shadow: 0 0 10px rgba(200,0,110,.6);
+}
+
+.cat-texts { display: flex; flex-direction: column; }
+.cat-label {
+  font-size: clamp(.78rem, 1.6vw, 1.05rem);
+  font-weight: 700;
+  color: rgba(255,255,255,.88);
+  line-height: 1.25;
+  transition: color .2s;
+}
+.cat-btn.active .cat-label { color: #ffffff; }
+.cat-sub {
+  font-size: clamp(.6rem, 1vw, .68rem);
+  color: rgba(255,255,255,.38);
+  margin-top: 3px;
+  font-weight: 400;
+}
+.cat-btn.active .cat-sub { color: rgba(255,255,255,.6); }
+
+.cat-num {
+  margin-left: auto;
+  width: clamp(18px, 2.5vw, 24px);
+  height: clamp(18px, 2.5vw, 24px);
+  border-radius: 50%;
+  background: rgba(255,255,255,.1);
+  color: rgba(255,255,255,.4);
+  font-size: clamp(.55rem, 1vw, .64rem);
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: background .25s, color .25s;
+}
+.cat-btn.active .cat-num { background: var(--mg); color: white; }
+
+/* ── RIGHT CONTENT AREA ──────────────────────── */
+.right-content {
+  position: relative;
+  z-index: 3;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: clamp(16px, 3vh, 32px) clamp(16px, 3vw, 32px) clamp(24px, 4vh, 40px) clamp(24px, 4vw, 48px);
+  min-height: 100vh;
+}
+
+.items-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1.8vh, 14px);
+  width: 100%;
+}
+
+/* ── ITEM CHIP ───────────────────────────────── */
+.item-chip {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1.5vw, 14px);
+  opacity: 0;
+  transform: translateX(70px);
+}
+.item-chip.fly-in {
+  animation: flyIn .4s cubic-bezier(.22,.68,0,1.15) forwards;
+}
+.item-chip.fly-out {
+  animation: flyOut .2s ease-in forwards;
+}
+@keyframes flyIn {
+  from { opacity: 0; transform: translateX(70px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes flyOut {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(-30px); }
+}
+
+.chip-icon-wrap {
+  width: clamp(36px, 5vw, 52px);
+  height: clamp(36px, 5vw, 52px);
+  border-radius: 50%;
+  background: rgba(255,255,255,.18);
+  border: 2px solid rgba(255,255,255,.28);
+  display: flex; align-items: center; justify-content: center;
+  font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,.12);
+}
+
+.chip-label-wrap {
+  background: var(--chip-bg);
+  border-radius: 8px;
+  padding: clamp(6px, 1.2vh, 10px) clamp(10px, 2vw, 18px);
+  box-shadow: var(--chip-shadow);
+  flex: 1;
+  border-left: 4px solid var(--mg);
+}
+.chip-main {
+  font-size: clamp(.76rem, 1.5vw, .9rem);
+  font-weight: 700;
+  color: var(--chip-txt);
+  line-height: 1.2;
+}
+.chip-detail {
+  font-size: clamp(.62rem, 1.1vw, .7rem);
+  color: var(--chip-sub);
+  margin-top: 2px;
+  line-height: 1.35;
+}
+
+/* ── INTRO HINT ──────────────────────────────── */
+.intro-state {
+  position: fixed;
+  top: 50%; left: 60%;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+  text-align: center;
+  color: rgba(255,255,255,.5);
+  pointer-events: none;
+  transition: opacity .35s;
+}
+.intro-state.hidden { opacity: 0; }
+.intro-arrow { font-size: 2rem; animation: arrowPulse 1.8s ease-in-out infinite; }
+.intro-label { font-size: .75rem; margin-top: 6px; letter-spacing: .06em; }
+@keyframes arrowPulse {
+  0%,100% { transform: translateX(0); opacity: .5; }
+  50%      { transform: translateX(-10px); opacity: 1; }
+}
+
+/* ── PROGRESS ────────────────────────────────── */
+.progress-row {
+  position: fixed;
+  bottom: 10px;
+  left: clamp(200px, 40%, 400px);
+  right: 16px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.prog-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.3);
+  cursor: pointer;
+  transition: background .25s, transform .2s;
+}
+.prog-dot.visited { background: rgba(255,255,255,.6); }
+.prog-dot.active  { background: white; transform: scale(1.3); }
+.prog-text {
+  margin-left: auto;
+  font-size: .6rem;
+  color: rgba(255,255,255,.55);
+  letter-spacing: .04em;
+}
+.prog-text.done { color: rgba(255,255,255,.9); font-weight: 700; }
+
+/* ── INFO BTN ────────────────────────────────── */
+.info-btn {
+  position: fixed;
+  bottom: 8px; right: 10px;
+  z-index: 10;
+  width: 26px; height: 26px;
+  border-radius: 5px;
+  border: 1.5px solid rgba(255,255,255,.4);
+  background: rgba(255,255,255,.1);
+  color: rgba(255,255,255,.7);
+  font-size: .75rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ── MOBILE ──────────────────────────────────── */
+@media (max-width: 560px) {
+  .slide { flex-direction: column; }
+  .left-panel {
+    width: 100%;
+    min-height: auto;
+    clip-path: none;
+    border-radius: 0 0 24px 24px;
+    padding: 20px 20px 24px;
+  }
+  .right-content {
+    min-height: auto;
+    padding: 20px 16px 48px;
+  }
+  .progress-row { left: 16px; }
+}
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="right-panel"></div>
+
+  <!-- Left grey panel -->
+  <div class="left-panel">
+    <div class="left-headline">Einflussfaktoren</div>
+
+    <button class="cat-btn" id="btn0" onclick="select(0)">
+      <div class="cat-indicator"></div>
+      <div class="cat-texts">
+        <div class="cat-label">Teilnehmer/-in</div>
+        <div class="cat-sub">Primärer Einflussfaktor</div>
+      </div>
+      <div class="cat-num">5</div>
+    </button>
+
+    <button class="cat-btn" id="btn1" onclick="select(1)">
+      <div class="cat-indicator"></div>
+      <div class="cat-texts">
+        <div class="cat-label">Förderbedarf &amp; Förderziel</div>
+        <div class="cat-sub">Was soll erreicht werden?</div>
+      </div>
+      <div class="cat-num">4</div>
+    </button>
+
+    <button class="cat-btn" id="btn2" onclick="select(2)">
+      <div class="cat-indicator"></div>
+      <div class="cat-texts">
+        <div class="cat-label">Rahmenbedingungen</div>
+        <div class="cat-sub">Weitere Einflussfaktoren</div>
+      </div>
+      <div class="cat-num">5</div>
+    </button>
+  </div>
+
+  <!-- Intro -->
+  <div class="intro-state" id="introState">
+    <div class="intro-arrow">←</div>
+    <div class="intro-label">Kategorie wählen</div>
+  </div>
+
+  <!-- Items -->
+  <div class="right-content">
+    <div class="items-wrap" id="itemsWrap"></div>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-row">
+    <div class="prog-dot" id="dot0" onclick="select(0)"></div>
+    <div class="prog-dot" id="dot1" onclick="select(1)"></div>
+    <div class="prog-dot" id="dot2" onclick="select(2)"></div>
+    <div class="prog-text" id="progText">Klicken Sie links auf eine Kategorie</div>
+  </div>
+
+  <div class="info-btn">i</div>
+</div>
+
+<script>
+const DATA = [
+  { items: [
+    { icon: "💪", main: "Kompetenzen & Stärken",    detail: "Vorhandene Fähigkeiten, Talente und Ressourcen" },
+    { icon: "⚠️", main: "Schwächen & Lücken",        detail: "Fehlende Grundkompetenzen, Förderbedarf" },
+    { icon: "❤️", main: "Interessen",                 detail: "Berufliche Wünsche, Neigungen, Hobbys" },
+    { icon: "🧠", main: "Lerntyp",                    detail: "Visuell · auditiv · handelnd · sozial" },
+    { icon: "🔥", main: "Motivation",                 detail: "Intrinsische und extrinsische Antriebe" },
+  ]},
+  { items: [
+    { icon: "🧭", main: "Berufliche Orientierung",   detail: "Berufsfelder erkunden, Stärken klären" },
+    { icon: "🎓", main: "Vermittlung in Ausbildung", detail: "Ausbildungsreife herstellen und begleiten" },
+    { icon: "💼", main: "Vermittlung in Arbeit",     detail: "Direkter Übergang in den Arbeitsmarkt" },
+    { icon: "📋", main: "Spezifischer Förderbedarf", detail: "Lernbeeinträchtigung · Sprache · soziale Kompetenzen" },
+  ]},
+  { items: [
+    { icon: "📄", main: "Projekttyp",                detail: "BvB · AsA · BaE · Reha-Ausbildung · Wirtschaft integriert" },
+    { icon: "🏆", main: "Projektziel",               detail: "Berufliche Orientierung oder Vermittlung" },
+    { icon: "🕐", main: "Anwesenheitszeit",          detail: "3 Unterrichtseinheiten bis 39 Stunden pro Woche" },
+    { icon: "👥", main: "Projektteam",               detail: "Lehrkräfte · Ausbilder · Sozialpädagogen · Psychologen" },
+    { icon: "🗺️", main: "Lernorte & Akteure",        detail: "Betrieb · Schule · Berufsschule · Eltern · Netzwerkpartner" },
+  ]}
+];
+
+let current = -1, visited = new Set(), animating = false;
+const TOTAL = 3;
+
+function select(idx) {
+  if (animating) return;
+  document.getElementById('introState').classList.add('hidden');
+  for (let i = 0; i < TOTAL; i++)
+    document.getElementById('btn' + i).classList.toggle('active', i === idx);
+  visited.add(idx);
+  updateDots(idx);
+  if (current === idx) return;
+  const wrap = document.getElementById('itemsWrap');
+  if (current === -1) { current = idx; renderItems(wrap, idx); }
+  else {
+    animating = true;
+    wrap.querySelectorAll('.item-chip').forEach(c => {
+      c.classList.remove('fly-in'); c.classList.add('fly-out');
+    });
+    setTimeout(() => { current = idx; renderItems(wrap, idx); animating = false; }, 220);
+  }
+}
+
+function renderItems(wrap, idx) {
+  wrap.innerHTML = '';
+  DATA[idx].items.forEach((item, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'item-chip';
+    chip.innerHTML = `
+      <div class="chip-icon-wrap">${item.icon}</div>
+      <div class="chip-label-wrap">
+        <div class="chip-main">${item.main}</div>
+        ${item.detail ? `<div class="chip-detail">${item.detail}</div>` : ''}
+      </div>`;
+    wrap.appendChild(chip);
+    setTimeout(() => chip.classList.add('fly-in'), i * 90);
+  });
+}
+
+function updateDots(active) {
+  const txt = document.getElementById('progText');
+  for (let i = 0; i < TOTAL; i++) {
+    const d = document.getElementById('dot' + i);
+    d.className = 'prog-dot';
+    if (i === active) d.classList.add('active');
+    else if (visited.has(i)) d.classList.add('visited');
+  }
+  if (visited.size === TOTAL) {
+    txt.textContent = '✓ Alle Kategorien erkundet';
+    txt.classList.add('done');
+  } else {
+    txt.textContent = visited.size + ' / ' + TOTAL + ' erkundet';
+    txt.classList.remove('done');
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown' || e.key === 'ArrowRight') select((current + 1 + TOTAL) % TOTAL);
+  if (e.key === 'ArrowUp'   || e.key === 'ArrowLeft')  select((current - 1 + TOTAL) % TOTAL);
+});
+</script>
+</body>
+</html>
